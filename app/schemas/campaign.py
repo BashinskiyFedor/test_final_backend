@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from app.models import Campaign
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
@@ -33,6 +34,19 @@ class CampaignRead(BaseModel):
     country: str
     offer_id: int
     already_exists: bool = False
+
+    @classmethod
+    def from_record(cls, record: Campaign, already_exists: bool) -> "CampaignRead":
+        campaign_id, stream_id = record.keitaro_ids()
+        return cls(
+            campaign_id=campaign_id,
+            stream_id=stream_id,
+            name=record.name,
+            alias=record.alias,
+            country=record.country,
+            offer_id=record.offer_id,
+            already_exists=already_exists,
+        )
 
 
 class CampaignStored(BaseModel):
